@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_SIZE 100000
+#define MAX_SIZE 1000000
 
 int arithmetic(int a, int b, char op) {
     int result;
@@ -174,24 +174,28 @@ void cas(Dictionary* dict, char *token, char strg, FILE *fp)
 void write(Dictionary* dict, char* token)
 {
     token = strtok(NULL, " ");
-    char slag1[256];
-    strncpy(slag1, token, strlen(token)-2);
+    char slag1[strlen(token)-2];
+    strncpy(slag1, token, strlen(token)-2); 
+    slag1[strlen(token)-2] = '\0';
+    printf("%s\n", slag1);
     printf("%d\n", get(dict, slag1));
+    //free(slag1);
 }
 
 void rede(Dictionary* dict, char* token)
 {
-    int x;
+    int x; 
     scanf("%d", &x);
     token = strtok(NULL, " ");
     char slag1[256];
-    strncpy(slag1, token, strlen(token)-2);
+    strncpy(slag1, token, strlen(token)-1);
+    slag1[strlen(token)-1] = '\0';
     put(dict, slag1, x);
 }
 
 void Whil(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890", ni, nn, *str = malloc(100 * sizeof(char));
+    char cif[11] = "п1234567890", ni, nn, *str = malloc(100);
     int s = 0, i = 0;
     token = strtok(NULL, " ");
 
@@ -222,7 +226,6 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
                 char strg[strlen(str)];
                 strcpy(strg,str);
                 cas(dict, strtok(strg, " "), str, fp);
-                free(str);
             }
             fseek(fp, -s, SEEK_CUR);
             s = 0;
@@ -240,7 +243,6 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
     }
     else
     {
-        printf("%s\n", token);
         char* op;
         if (strchr(cif, token))
         {
@@ -291,7 +293,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
 
 void moshi(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890i", *str = malloc(100 * sizeof(char)), *tok;
+    char cif[11] = "п1234567890i", *str = malloc(100), *tok;
     token = strtok(NULL, " ");
     int i = 0;
 
@@ -414,8 +416,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    FILE *fp = fopen("tab.txt", "r");
-    char *str = malloc(100 * sizeof(char)), strg[100];
+    FILE *fp = fopen("a.txt", "r");
+    char *str = malloc(100), strg[100];
     char *YN, *token;
 
     if (!fp){
@@ -443,7 +445,6 @@ int main(int argc, char *argv[])
         token = strtok(str, " ");
         cas(&dict, token, strg, fp);
 
-        free(str);
     }
 
     return 1;
