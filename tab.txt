@@ -1,0 +1,7 @@
+a = 5
+read b
+b = a + b
+print b
+if a > 3 then
+  print a
+fi
