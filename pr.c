@@ -119,7 +119,8 @@ void cas(Dictionary* dict, char *token, char strg, FILE *fp)
             char *op = strtok(NULL, " ");
             if (op == NULL)
             {
-                char slag1[strlen(token)-2];
+                const int a = strlen(token)-2;
+                char slag1[a];
                 strncpy(slag1, token, strlen(token)); 
                 slag1[strlen(token)] = '\0';
 
@@ -133,8 +134,8 @@ void cas(Dictionary* dict, char *token, char strg, FILE *fp)
                 }
             }
             else
-            {
-                char slag1[strlen(token)-2];
+            {   const int a = strlen(token)-2;
+                char slag1[a];
                 strncpy(slag1, token, strlen(token)); 
                 slag1[strlen(token)] = '\0';
 
@@ -175,7 +176,8 @@ void write(Dictionary* dict, char* token)
 {
     token = strtok(NULL, " ");
     char slag1[strlen(token)-2];
-    strncpy(slag1, token, strlen(token)-2); 
+    const int a = strlen(token)-2;
+    strncpy(slag1, token, a); 
     slag1[strlen(token)-2] = '\0';
     printf("%s\n", slag1);
     printf("%d\n", get(dict, slag1));
@@ -195,7 +197,7 @@ void rede(Dictionary* dict, char* token)
 
 void Whil(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890", ni, nn, *str = malloc(100);
+    char cif[14] = "п1234567890i", ni, nn, *str = malloc(100);
     int s = 0, i = 0;
     token = strtok(NULL, " ");
 
@@ -223,7 +225,8 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
             {
                 fgets(str, sizeof(str), fp);
                 s += strlen(str);
-                char strg[strlen(str)];
+                const int a = strlen(str);
+                char strg[a];
                 strcpy(strg,str);
                 cas(dict, strtok(strg, " "), str, fp);
             }
@@ -293,7 +296,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
 
 void moshi(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890i", *str = malloc(100), *tok;
+    char cif[14] = "п1234567890i", *str = malloc(100), *tok;
     token = strtok(NULL, " ");
     int i = 0;
 
@@ -314,7 +317,8 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
             while(strcmp(str, "fi"))
             {
                 fgets(str,100, fp);
-                char strg[strlen(str)];
+                const int a = strlen(str);
+                char strg[a];
                 strcpy(strg,str);
                 tok = strtok(str, " ");
                 if (!strcmp(tok, "else")){
@@ -325,18 +329,19 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
         }
 
         else
-        {int a = 0;
+        {int b = 0;
             while(strcmp(str, "fi"))
             {
                 
                 fgets(str, 100, fp);
-                char strg[strlen(str)], *el = malloc(4);
+                const int a = strlen(str);
+                char strg[a], *el = malloc(4);
                 strcpy(strg,str);
                 tok = strtok(str, " "); 
                 strncpy(el, tok, 4);
 
                 if (!strcmp(el, "else")){
-                    a = 1;
+                    b = 1;
                     fgets(str, 100, fp);
                     strcpy(strg,str);
                     tok = strtok(str, " ");
@@ -372,7 +377,8 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
             while(strcmp(str, "fi"))
             {
                 fgets(str,100, fp);
-                char strg[strlen(str)];
+                const int a = strlen(str);
+                char strg[a];
                 strcpy(strg,str);
                 tok = strtok(str, " ");
                 if (!strcmp(tok, "else")){
@@ -383,18 +389,19 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
         }
 
         else
-        {int a = 0;
+        {int b = 0;
             while(strcmp(str, "fi"))
             {
                 
                 fgets(str, 100, fp);
-                char strg[strlen(str)], *el = malloc(4);
+                const int a = strlen(str);
+                char strg[a], *el = malloc(4);
                 strcpy(strg,str);
                 tok = strtok(str, " "); 
                 strncpy(el, tok, 4);
 
                 if (!strcmp(el, "else")){
-                    a = 1;
+                    b = 1;
                     fgets(str, 100, fp);
                     strcpy(strg,str);
                     tok = strtok(str, " ");
