@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define MAX_SIZE 1000
+#define MAX_SIZE 100000
 
 int arithmetic(int a, int b, char op) {
     int result;
@@ -90,7 +90,7 @@ int get(Dictionary* dict, char* key) {
     exit(1);
 }
 
-void cas(Dictionary* dict, char *token, char str[], FILE *fp)
+void cas(Dictionary* dict, char *token, char strg, FILE *fp)
 {
     if(!strcmp(token,"read")){
         rede(dict, token);
@@ -109,18 +109,20 @@ void cas(Dictionary* dict, char *token, char str[], FILE *fp)
 
     else
     {
-        char *last, cif[11] = "п1234567890", nameper[25];
+        char *cif = "п1234567890", nameper[25];
         int s1, s2; 
         strcpy(nameper, token);
         token = strtok(NULL, " ");
         if (!strcmp(token, "="))
         {
             token = strtok(NULL, " ");
-            char slag1[256];
-            strncpy(slag1, token, strlen(token)-2); 
             char *op = strtok(NULL, " ");
             if (op == NULL)
             {
+                char slag1[strlen(token)-2];
+                strncpy(slag1, token, strlen(token)); 
+                slag1[strlen(token)] = '\0';
+
                 if(strchr(cif, slag1[0]))
                 {
                     put(dict, nameper, atoi(slag1));
@@ -132,11 +134,16 @@ void cas(Dictionary* dict, char *token, char str[], FILE *fp)
             }
             else
             {
-                 
+                char slag1[strlen(token)-2];
+                strncpy(slag1, token, strlen(token)); 
+                slag1[strlen(token)] = '\0';
+
                 token = strtok(NULL, " ");
-                char slag2[strlen(token)-2];
-                strncpy(slag2, token, strlen(token)-2); 
-                if(!strcmp(cif, slag1[0]))
+                char slag2[23];
+                strncpy(slag2, token, strlen(token)); 
+                slag2[strlen(token)] = '\0';
+
+                if(strchr(cif, slag1[0]))
                 {
                     s1 = atoi(slag1);
                 }
@@ -158,7 +165,7 @@ void cas(Dictionary* dict, char *token, char str[], FILE *fp)
         }
         else
         {
-            printf("Ошибка в этой строке: '%s' \n", str);
+            printf("Ошибка в этой строке: '%s' \n", strg);
             exit(1);
         }
     }
@@ -167,7 +174,9 @@ void cas(Dictionary* dict, char *token, char str[], FILE *fp)
 void write(Dictionary* dict, char* token)
 {
     token = strtok(NULL, " ");
-    printf("%d\n", get(dict, token));
+    char slag1[256];
+    strncpy(slag1, token, strlen(token)-2);
+    printf("%d\n", get(dict, slag1));
 }
 
 void rede(Dictionary* dict, char* token)
@@ -175,26 +184,33 @@ void rede(Dictionary* dict, char* token)
     int x;
     scanf("%d", &x);
     token = strtok(NULL, " ");
-    put(dict, token, x);
+    char slag1[256];
+    strncpy(slag1, token, strlen(token)-2);
+    put(dict, slag1, x);
 }
 
 void Whil(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890", ni, nn, str[256];
+    char cif[11] = "п1234567890", ni, nn, *str = malloc(100 * sizeof(char));
     int s = 0, i = 0;
     token = strtok(NULL, " ");
 
     if (strchr(cif, token))
     {
+        printf("%s\n", "cif");
         i = atoi(token);
         ni = NULL;
     }
     else
     {
+        printf("%s\n", "chis");
         i = get(dict, token);
-        ni = *token;
+        printf("%d\n", i);
+        strcpy(ni, token);
+        printf("%s\n", token);
     }
     token = strtok(NULL, " ");
+        printf("%s\n", token);
     if (!strcmp(token, "do"))
     {
         while(i)
@@ -206,6 +222,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
                 char strg[strlen(str)];
                 strcpy(strg,str);
                 cas(dict, strtok(strg, " "), str, fp);
+                free(str);
             }
             fseek(fp, -s, SEEK_CUR);
             s = 0;
@@ -223,6 +240,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
     }
     else
     {
+        printf("%s\n", token);
         char* op;
         if (strchr(cif, token))
         {
@@ -241,7 +259,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
             nn = *token;
         }
 
-        while(logical(i,n,op))
+        while(logical(i,n,*op))
         {
             while(!strcmp(strtok(str, " "), "done"))
             {
@@ -273,7 +291,7 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
 
 void moshi(Dictionary* dict, char* token, FILE *fp)
 {
-    char cif[11] = "п1234567890", str[256];
+    char cif[11] = "п1234567890i", *str = malloc(100 * sizeof(char)), *tok;
     token = strtok(NULL, " ");
     int i = 0;
 
@@ -293,30 +311,37 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
         {
             while(strcmp(str, "fi"))
             {
-                fgets(str, sizeof(str), fp);
-                if (!strcmp(strtok(str, " "), "else"))
-                    break;
+                fgets(str,100, fp);
                 char strg[strlen(str)];
                 strcpy(strg,str);
-                cas(dict, strtok(strg, " "), str, fp);
+                tok = strtok(str, " ");
+                if (!strcmp(tok, "else")){
+                    break;
+                }
+                cas(&dict, tok, strg, fp);
             }
         }
 
         else
-        {
+        {int a = 0;
             while(strcmp(str, "fi"))
             {
-                fgets(str, sizeof(str), fp);
-                if (!strcmp(strtok(str, " "), "else") == 0)
-                {
-                    while(!strcmp(strtok(str, " "), "fi"))
-                    {
-                        fgets(str, sizeof(str), fp);
-                        char strg[strlen(str)];
-                        strcpy(strg,str);
-                        cas(dict, strtok(strg, " "), str, fp);
+                
+                fgets(str, 100, fp);
+                char strg[strlen(str)], *el = malloc(4);
+                strcpy(strg,str);
+                tok = strtok(str, " "); 
+                strncpy(el, tok, 4);
+
+                if (!strcmp(el, "else")){
+                    a = 1;
+                    fgets(str, 100, fp);
+                    strcpy(strg,str);
+                    tok = strtok(str, " ");
                     }
-                    break;
+
+                if(a == 1){
+                    cas(&dict, tok, strg, fp);
                 }
             }
         }
@@ -325,7 +350,7 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
     else
     {
         char* op;
-        if (strchr(cif, token))
+        if (!strchr(cif, token))
         {
             op = token;
         }
@@ -340,34 +365,41 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
             n = get(dict, token);
         }
 
-        if(logical(i,n,op))
+        if(logical(i,n,*op))
         {
             while(strcmp(str, "fi"))
             {
-                fgets(str, sizeof(str), fp);
-                if (!strcmp(strtok(str, " "), "else"))
-                    break;
+                fgets(str,100, fp);
                 char strg[strlen(str)];
                 strcpy(strg,str);
-                cas(&dict, strtok(strg, " "), str, fp);
+                tok = strtok(str, " ");
+                if (!strcmp(tok, "else")){
+                    break;
+                }
+                cas(&dict, tok, strg, fp);
             }
         }
 
         else
-        {
+        {int a = 0;
             while(strcmp(str, "fi"))
             {
-                fgets(str, sizeof(str), fp);
-                if (!strcmp(strtok(str, " "), "else"))
-                {
-                    while(!strcmp(strtok(str, " "), "fi"))
-                    {
-                        fgets(str, sizeof(str), fp);
-                        char strg[strlen(str)];
-                        strcpy(strg,str);
-                        cas(dict, strtok(strg, " "), str, fp);
+                
+                fgets(str, 100, fp);
+                char strg[strlen(str)], *el = malloc(4);
+                strcpy(strg,str);
+                tok = strtok(str, " "); 
+                strncpy(el, tok, 4);
+
+                if (!strcmp(el, "else")){
+                    a = 1;
+                    fgets(str, 100, fp);
+                    strcpy(strg,str);
+                    tok = strtok(str, " ");
                     }
-                    break;
+
+                if(a == 1){
+                    cas(&dict, tok, strg, fp);
                 }
             }
         }
@@ -377,17 +409,17 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2){
-        printf("The number of arguments passed must be one");
+    if (argc != 1){
+        printf("The number of arguments passed must be one\n");
         return 1;
     }
 
-    FILE *fp = fopen(argv[1], "r");
-    char str[256], strg[256];
-    char *YN, *token, *last;
+    FILE *fp = fopen("tab.txt", "r");
+    char *str = malloc(100 * sizeof(char)), strg[100];
+    char *YN, *token;
 
     if (!fp){
-        printf("не удалось открыть файл");
+        printf("не удалось открыть файл\n");
         return 1;
     }
     Dictionary dict;
@@ -395,7 +427,7 @@ int main(int argc, char *argv[])
 
     while(1)
     {
-        YN = fgets(str, sizeof(str), fp);
+        YN = fgets(str, 123, fp);
         strcpy(strg,str);
 
         if (!YN)
@@ -409,7 +441,9 @@ int main(int argc, char *argv[])
             }
         }
         token = strtok(str, " ");
-        cas(&dict, token, strg, &fp);
+        cas(&dict, token, strg, fp);
+
+        free(str);
     }
 
     return 1;
