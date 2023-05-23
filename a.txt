@@ -1,0 +1,6 @@
+a = 5
+pop = 6 + 1
+print pop
+if 6 > a then
+    print a
+fi
