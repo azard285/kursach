@@ -1,7 +1,7 @@
-a = 5
-read b
-b = a + b
-print b
-if a > 3 then
-  print a
-fi
+a = 4
+print a
+s = a + 1
+while s < 8 do
+    s = s + 1
+    print s
+done 
