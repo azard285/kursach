@@ -1,0 +1,10 @@
+a = 3
+s = 4
+if a > 0 then
+    a = a + 1
+    while a < 9 do
+        a = a + 1 
+    done 
+fi 
+print s
+print a

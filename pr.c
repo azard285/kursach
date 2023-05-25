@@ -15,7 +15,7 @@ int arithmetic(int a, int b, char op) {
             break;
         default:
             printf("Invalid operator\n");
-            break;
+            exit(1);
     }
     return result;
 }
@@ -39,61 +39,58 @@ int logical(int a, int b, char op) {
     return result;
 }
 
-typedef struct {
-    int key;
-    int value;
-} Pair;
 
-typedef struct {
-    Pair pairs[MAX_SIZE];
-    int size;
-} Dictionary;
+struct DictionaryItem {
+    char key[50]; 
+    int value; 
+};
 
-void init(Dictionary* dict) {
-    dict->size = 0;
-}
-int suzu;
-void put(Dictionary* dict, char* key, int value) {
-    dict->size = suzu;
-    // проверяем, что словарь не переполнен
-    if (dict->size >= 10000) {
-        printf("Error: dictionary is full\n");
-        exit(1);
+
+struct Dictionary {
+    struct DictionaryItem items[MAX_SIZE]; 
+    int size; 
+};
+
+
+void put(struct Dictionary *dict, char *key, int value) {
+    //printf("%s put %d size\n", key, dict->size);
+    if (dict->size >= MAX_SIZE) {
+        printf("Словарь заполнен\n");
+        return;
     }
 
-    // ищем элемент с таким же ключом
-    int i;
-    for (i = 0; i < dict->size; i++) {
-        if (dict->pairs[i].key == *key) {
-            // если ключ уже есть, заменяем значение
-            dict->pairs[i].value = value;
+    for (int i = 0; i < dict->size; i++){
+        if(!strcmp(dict->items[i].key, key)){
+            dict->items[i].value = value;
             return;
         }
     }
     
-    // если ключа еще нет, добавляем элемент в конец словаря
-    dict->pairs[dict->size].key = *key;
-    dict->pairs[dict->size].value = value;
+    struct DictionaryItem newItem;
+    strcpy(newItem.key, key);
+    newItem.value = value;
+
+    dict->items[dict->size] = newItem;
     dict->size++;
-    suzu = dict->size;
 }
 
-int get(Dictionary* dict, char* key) {
-    printf("%d вывывы\n", dict->size);
-    // ищем элемент с таким же ключом
+int get(struct Dictionary *dict, char *key) {
     int i;
+    //printf("%d get size\n", dict->size);
+
     for (i = 0; i < dict->size; i++) {
-        if (dict->pairs[i].key == *key) {
-            return dict->pairs[i].value;
+        //printf("%d %s\n", i, dict->items[i].key);
+        if (strcmp(dict->items[i].key, key) == 0) {
+            //printf("%d value\n", dict->items[i].value);
+            return dict->items[i].value;
         }
     }
 
-    // если ключ не найден, выводим ошибку и завершаем программу
-    printf("Error: key not found\n");
+    printf("Элемент с ключом %s не найден\n", key);
     exit(1);
 }
 
-void cas(Dictionary* dict, char *token, char strg, FILE *fp)
+void cas(struct Dictionary *dict, char *token, char *strg, FILE *fp)
 {
     if(!strcmp(token,"read")){
         rede(dict, token);
@@ -148,22 +145,19 @@ void cas(Dictionary* dict, char *token, char strg, FILE *fp)
                 strncpy(slag2, token, strlen(token)); 
                 slag2[strlen(token)] = '\0';
 
-                if(strchr(cif, slag1[0]))
-                {
+                if(strchr(cif, slag1[0])){
                     s1 = atoi(slag1);
                 }
-                else
-                {
+                else{
                     s1 = get(dict, slag1);
                 }
-                if(strchr(cif, slag2[0]))
-                {
+                if(strchr(cif, slag2[0])){
                    s2 = atoi(slag2);
                 }
-                else
-                {
+                else{
                     s2 = get(dict, slag2);
                 }
+
                 put(dict, nameper, arithmetic(s1, s2, *op));
             }
             memset(nameper, 0, sizeof(nameper));
@@ -176,17 +170,16 @@ void cas(Dictionary* dict, char *token, char strg, FILE *fp)
     }
 }
 
-void write(Dictionary* dict, char* token)
+void write(struct Dictionary *dict, char* token)
 {
     token = strtok(NULL, " ");
     char slag1[strlen(token)-2];
-    const int a = strlen(token)-2;
-    strncpy(slag1, token, a); 
+    strncpy(slag1, token, strlen(token)-2); 
     slag1[strlen(token)-2] = '\0';
     printf("%d\n", get(dict, slag1));
 }
 
-void rede(Dictionary* dict, char* token)
+void rede(struct Dictionary *dict, char* token)
 {
     int x; 
     scanf("%d", &x);
@@ -197,7 +190,7 @@ void rede(Dictionary* dict, char* token)
     put(dict, slag1, x);
 }
 
-void Whil(Dictionary* dict, char* token, FILE *fp)
+void Whil(struct Dictionary *dict, char* token, FILE *fp)
 {
     char cif[14] = "п1234567890i", *ni, *nn, *str = malloc(100), *tok = token;
     int s = 0, i = 0;
@@ -244,54 +237,43 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
     else
     {
         char* op;
-        if (!strchr(cif, token))
-        {
+        if (!strchr(cif, token)){
             op = token;
         }
         token = strtok(NULL, " ");
         int n; 
-        if (strchr(cif, token[0]))
-        {
+        if (strchr(cif, token[0])){
             n = atoi(token);
             nn = NULL;
         }
-        else
-        {
+        else{
             n = get(dict, token);
             nn = *token;
         }
 
         while(logical(i,n,*op))
         {
-            while(strcmp(tok, "done"))
+            while(1)
             {
                 fgets(str,100, fp);
                 s += strlen(str);
                 char strg[strlen(str)];
                 strcpy(strg,str);
                 tok = strtok(str, " ");
-                printf("%s\n", tok);
-                if (!strcmp(tok, "done"))
-                {
+                if (!strcmp(tok, "done")){
                     break;
                 }
-                cas(&dict, tok, strg, fp);
+                cas(dict, tok, strg, fp);
             }
-            printf("fsfeffryhfdghtyr\n");
             fseek(fp, -s, SEEK_CUR);
             s = 0;
-            break;
+            i++;
                     
-            if(ni)
-            {
-                printf("%s dsfhrthr\n", ni);
+            if(ni){
                 i = get(dict, ni);
-                printf("%d\n", i);
             }
-            if(nn)
-            {
+            if(nn){
                  n = get(dict, nn);
-                 printf("%d\n", n);
             }
             else if((ni == NULL) & (nn == NULL))
             {
@@ -299,10 +281,22 @@ void Whil(Dictionary* dict, char* token, FILE *fp)
                 exit(1);
             }
         }
+        while(1)
+        {
+            fgets(str,100, fp);
+            s += strlen(str);
+            char strg[strlen(str)];
+            strcpy(strg,str);
+            tok = strtok(str, " ");
+            if (!strcmp(tok, "done"))
+            {
+                break;
+            }
+        }
     }
 }
 
-void moshi(Dictionary* dict, char* token, FILE *fp)
+void moshi(struct Dictionary *dict, char* token, FILE *fp)
 {
     char cif[14] = "п1234567890i", *str = malloc(100), *tok = token;
     token = strtok(NULL, " ");
@@ -321,23 +315,23 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
     if (!strcmp(token, "then"))
     {
         if(i)
-        {
-            while(strcmp(str, "fi"))
+        {   
+            while(strcmp(tok, "fi"))
             {
                 fgets(str,100, fp);
-                const int a = strlen(str);
-                char strg[a];
+                char strg[strlen(str)];
                 strcpy(strg,str);
                 tok = strtok(str, " ");
-                if (!strcmp(tok, "else")){
+                if (!strcmp(tok, "else") || !strcmp(tok, "fi")){
                     break;
                 }
-                cas(&dict, tok, strg, fp);
+                cas(dict, tok, strg, fp);
             }
         }
 
         else
-        {int b = 0;
+        {
+            int b = 0;
             while(strcmp(str, "fi"))
             {
                 
@@ -347,6 +341,9 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
                 strcpy(strg,str);
                 tok = strtok(str, " "); 
                 strncpy(el, tok, 4);
+                if (!strcmp(tok, "fi")){
+                    break;
+                }
 
                 if (!strcmp(el, "else")){
                     b = 1;
@@ -354,9 +351,9 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
                     strcpy(strg,str);
                     tok = strtok(str, " ");
                     }
-
-                if(a == 1){
-                    cas(&dict, tok, strg, fp);
+                    free(el);
+                if(b == 1){
+                    cas(dict, tok, strg, fp);
                 }
             }
         }
@@ -382,28 +379,29 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
 
         if(logical(i,n,*op))
         {   
-            char kon[3];
+            int b = 0;
             while(strcmp(tok, "fi"))
             {
-                fgets(str,100, fp);
-                char strg[strlen(str)];
+                fgets(str, 100, fp);
+                char strg[strlen(str)], *el = malloc(4);
                 strcpy(strg,str);
-                tok = strtok(str, " ");
-                if (!strcmp(tok, "else") || !strcmp(tok, "fi")){
+                tok = strtok(str, " "); 
+                strncpy(el, tok, 4);
+                if (!strcmp(tok, "fi") || !strcmp(tok, "else")){
                     break;
                 }
-                cas(&dict, tok, strg, fp);
+                cas(dict, tok, strg, fp);
             }
         }
 
         else
-        {int b = 0;
+        {
+            int b = 0;
             while(strcmp(str, "fi"))
             {
                 
                 fgets(str, 100, fp);
-                const int a = strlen(str);
-                char strg[a], *el = malloc(4);
+                char strg[strlen(str)], *el = malloc(4);
                 strcpy(strg,str);
                 tok = strtok(str, " "); 
                 strncpy(el, tok, 4);
@@ -419,7 +417,7 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
                     }
                     free(el);
                 if(b == 1){
-                    cas(&dict, tok, strg, fp);
+                    cas(dict, tok, strg, fp);
                 }
             }
         }
@@ -429,12 +427,12 @@ void moshi(Dictionary* dict, char* token, FILE *fp)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 1){
+    if (argc != 2){
         printf("The number of arguments passed must be one\n");
         return 1;
     }
 
-    FILE *fp = fopen("tab.txt", "r");
+    FILE *fp = fopen(argv[1], "r");
     char *str = malloc(100), strg[100];
     char *YN, *token;
 
@@ -442,13 +440,14 @@ int main(int argc, char *argv[])
         printf("не удалось открыть файл\n");
         return 1;
     }
-    Dictionary dict;
-    init(&dict);
+    struct Dictionary dict;
+    dict.size = 0;
 
     while(1)
     {
         YN = fgets(str, 123, fp);
         strcpy(strg,str);
+        //printf("%s str\n", str);
 
         if (!YN)
         {
@@ -456,7 +455,7 @@ int main(int argc, char *argv[])
                 break;
             else
             {
-                printf("файл закончился\n");
+                //printf("файл закончился\n");
                 break;
             }
         }
