@@ -255,8 +255,8 @@ void Whil(struct Dictionary *dict, char* token, FILE *fp)
         }
         else{
             n = get(dict, token);
-            nn = *token;
-            printf("%s wh\n", n);
+            nn = token;
+            //printf("%d wh %s\n", n, );
         }
 
         while(logical(i,n,*op))
