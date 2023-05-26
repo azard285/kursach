@@ -76,10 +76,10 @@ void put(struct Dictionary *dict, char *key, int value) {
 
 int get(struct Dictionary *dict, char *key) {
     int i;
-    //printf("%d get size\n", dict->size);
+    //printf("%d get size %s key\n", dict->size, key);
 
     for (i = 0; i < dict->size; i++) {
-        //printf("%d %s\n", i, dict->items[i].key);
+        //printf("%d %s dfdfdfdfdfdfdfdfdfdf\n", i, dict->items[i].key);
         if (strcmp(dict->items[i].key, key) == 0) {
             //printf("%d value\n", dict->items[i].value);
             return dict->items[i].value;
@@ -92,6 +92,7 @@ int get(struct Dictionary *dict, char *key) {
 
 void cas(struct Dictionary *dict, char *token, char *strg, FILE *fp)
 {
+	//printf("%s sdgedsfrhgsfdfth\n", token);
     if(!strcmp(token,"read")){
         rede(dict, token);
     }
@@ -172,10 +173,12 @@ void cas(struct Dictionary *dict, char *token, char *strg, FILE *fp)
 
 void write(struct Dictionary *dict, char* token)
 {
+	//printf("%s dsdsdsdsd\n", token);
     token = strtok(NULL, " ");
-    char slag1[strlen(token)-2];
-    strncpy(slag1, token, strlen(token)-2); 
-    slag1[strlen(token)-2] = '\0';
+    char slag1[strlen(token)-1];
+    strncpy(slag1, token, strlen(token)); 
+    slag1[strlen(token)] = '\0';
+    //printf("%s heh %s print\n", token, slag1);
     printf("%d\n", get(dict, slag1));
 }
 
@@ -183,10 +186,14 @@ void rede(struct Dictionary *dict, char* token)
 {
     int x; 
     scanf("%d", &x);
+    //printf("%s tok\n", token);
     token = strtok(NULL, " ");
+    //printf("%s tok\n", token);
     char slag1[256];
-    strncpy(slag1, token, strlen(token)-1);
-    slag1[strlen(token)-1] = '\0';
+    strncpy(slag1, token, strlen(token));
+    //printf("%s rede\n", slag1);
+    slag1[strlen(token)] = '\0';
+    //printf("%s rede\n", slag1);
     put(dict, slag1, x);
 }
 
@@ -249,6 +256,7 @@ void Whil(struct Dictionary *dict, char* token, FILE *fp)
         else{
             n = get(dict, token);
             nn = *token;
+            printf("%s wh\n", n);
         }
 
         while(logical(i,n,*op))
